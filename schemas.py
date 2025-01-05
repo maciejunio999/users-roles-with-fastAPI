@@ -9,10 +9,11 @@ class BaseUser(BaseModel):
 
 
 class User(BaseModel):
+    id: int
     username: str
     email: str
     class Config:
-        orm_mode = True
+        from_attributes  = True
 
 
 class UserInDB(User):
@@ -30,7 +31,6 @@ class ShowUser(BaseModel):
     class Config:
         orm_mode = True
 
-
 class Login(BaseModel):
     username: str
     password: str
@@ -43,3 +43,19 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: str | None = None
+
+
+class ShowRole(BaseModel):
+    name: str
+    owners: List[User] = []
+    class Config:
+        from_attributes = True
+
+
+class CreateRole(BaseModel):
+    name: str
+    code: str
+
+
+class AddUserToRole(BaseModel):
+    user_id: int
