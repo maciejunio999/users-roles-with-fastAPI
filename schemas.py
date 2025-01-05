@@ -25,11 +25,18 @@ class UpdateUser(BaseModel):
     email: str
 
 
+class UpdateUserRole(BaseModel):
+    code: str
+    class Config:
+        from_attributes = True
+
+
 class ShowUser(BaseModel):
     username: str
     email: str
     class Config:
         orm_mode = True
+
 
 class Login(BaseModel):
     username: str
@@ -47,6 +54,27 @@ class TokenData(BaseModel):
 
 class ShowRole(BaseModel):
     name: str
+
+
+class UserRoles(BaseModel):
+    id: int
+    username: str
+    roles: List[ShowRole] = []
+    class Config:
+        from_attributes  = True
+
+
+class ShowRole(BaseModel):
+    name: str
+    owners: List[User] = []
+    class Config:
+        from_attributes = True
+
+
+class ShowFullRole(BaseModel):
+    id: int
+    name: str
+    code: str
     owners: List[User] = []
     class Config:
         from_attributes = True
@@ -55,6 +83,8 @@ class ShowRole(BaseModel):
 class CreateRole(BaseModel):
     name: str
     code: str
+    class Config:
+        from_attributes = True
 
 
 class AddUserToRole(BaseModel):

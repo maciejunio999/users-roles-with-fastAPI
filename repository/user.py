@@ -17,6 +17,13 @@ def get_one(db: Session, id: int):
     return user
 
 
+def get_users_roles(db: Session, id: int):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+    return user
+
+
 def create(request: schemas.BaseUser, db: Session):
     new_user = models.User(username=request.username, email=request.email, password=hashing.Hash.bcrypt(request.password))
     db.add(new_user)
@@ -49,3 +56,19 @@ def update(db: Session, id: int, request: schemas.UpdateUser):
     db.refresh(user)
 
     return {'details': 'User Updated'}
+
+
+def add_role_to_user(db: Session, id: int, request: schemas.UpdateUserRole):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
+
+    role = db.query(models.Role).filter(models.Role.code == request.code).first()
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.role_id} not found")
+
+    user.roles.append(role)
+    db.commit()
+    db.refresh(user)
+
+    return user
