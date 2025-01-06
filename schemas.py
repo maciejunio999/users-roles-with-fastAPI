@@ -2,12 +2,6 @@ from pydantic import BaseModel
 from typing import List
 
 
-class BaseUser(BaseModel):
-    username: str
-    email: str
-    password: str
-
-
 class User(BaseModel):
     id: int
     username: str
@@ -26,7 +20,7 @@ class UpdateUser(BaseModel):
 
 
 class UpdateUserRole(BaseModel):
-    code: str
+    role_id: int
     class Config:
         from_attributes = True
 
@@ -52,14 +46,14 @@ class TokenData(BaseModel):
     email: str | None = None
 
 
-class ShowRole(BaseModel):
+class RoleName(BaseModel):
     name: str
 
 
 class UserRoles(BaseModel):
     id: int
     username: str
-    roles: List[ShowRole] = []
+    roles: List[RoleName] = []
     class Config:
         from_attributes  = True
 

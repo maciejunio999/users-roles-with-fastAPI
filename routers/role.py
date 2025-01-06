@@ -40,3 +40,8 @@ def add_user_to_role(id: int, request: schemas.AddUserToRole, db: Session = Depe
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)
 def delete_role(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return role.delete(db, id)
+
+
+@router.delete("/{id}/remove_user", response_model=schemas.ShowFullRole, status_code=status.HTTP_200_OK)
+def remove_role_from_user(id: int, request: schemas.AddUserToRole, db: Session = Depends(database.get_db)):
+    return role.remove_user_from_role(db=db, id=id, request=request)

@@ -17,8 +17,8 @@ def get_users(db: Session = Depends(database.get_db)):
     return user.get_all(db)
 
 
-@router.get('/{id}', response_model=schemas.ShowUser)
-def get_user(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.get('/{id}', response_model=schemas.UserRoles)
+def get_user(id: int, db: Session = Depends(database.get_db)):
     return user.get_one(db, id)
 
 
@@ -27,8 +27,8 @@ def get_users_roles(id: int, db: Session = Depends(database.get_db), get_current
     return user.get_users_roles(db, id)
 
 
-@router.post('/', response_model=schemas.BaseUser)
-def create_user(request: schemas.BaseUser, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.post('/', response_model=schemas.User)
+def create_user(request: schemas.User, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return user.create(request, db)
 
 
@@ -45,3 +45,8 @@ def update_user(id: int, request: schemas.UpdateUser, db: Session = Depends(data
 @router.put('/{id}/add_role', status_code=status.HTTP_202_ACCEPTED, response_model=schemas.UserRoles)
 def add_role_to_user(id: int, request: schemas.UpdateUserRole, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return user.add_role_to_user(db, id, request)
+
+
+@router.delete("/{id}/remove_role", status_code=status.HTTP_204_NO_CONTENT)
+def remove_role_from_user(id: int, request: schemas.UpdateUserRole, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+    return user.remove_role_from_user(db=db, id=id, request=request)

@@ -68,3 +68,23 @@ def delete(db: Session, id: int):
     role_query.delete(synchronize_session=False)
     db.commit()
     return {'details': 'Role Deleted'}
+
+
+def remove_user_from_role(db: Session, id: int, request: schemas.AddUserToRole):
+    role = db.query(models.Role).options(joinedload(models.Role.users)).filter(models.Role.id == id).first()
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.role_id} not found")
+    
+    user = db.query(models.User).filter(models.User.id == request.user_id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
+    
+    if user not in role.users:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Role does not have this user assigned")
+    
+    role.users.remove(user)
+    db.commit()
+    db.refresh(user)
+    owners = [schemas.User.from_orm(u) for u in role.users]
+
+    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners)

@@ -24,7 +24,7 @@ def get_users_roles(db: Session, id: int):
     return user
 
 
-def create(request: schemas.BaseUser, db: Session):
+def create(request: schemas.User, db: Session):
     new_user = models.User(username=request.username, email=request.email, password=hashing.Hash.bcrypt(request.password))
     db.add(new_user)
     db.commit()
@@ -63,7 +63,7 @@ def add_role_to_user(db: Session, id: int, request: schemas.UpdateUserRole):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
 
-    role = db.query(models.Role).filter(models.Role.code == request.code).first()
+    role = db.query(models.Role).filter(models.Role.id == request.role_id).first()
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.role_id} not found")
 
@@ -72,3 +72,25 @@ def add_role_to_user(db: Session, id: int, request: schemas.UpdateUserRole):
     db.refresh(user)
 
     return user
+
+
+def remove_role_from_user(db: Session, id: int, request: schemas.UpdateUserRole):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
+
+    role = db.query(models.Role).filter(models.Role.id == request.role_id).first()
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.role_id} not found")
+
+    if role not in user.roles:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User does not have this role")
+
+    user.roles.remove(role)
+    
+    db.commit()
+    db.refresh(user)
+
+    user_roles = [schemas.RoleName(name=role.name) for role in user.roles]
+
+    return schemas.UserRoles(id=user.id, username=user.username, roles=user_roles)
