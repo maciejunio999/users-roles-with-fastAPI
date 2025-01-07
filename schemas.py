@@ -58,11 +58,18 @@ class UserRoles(BaseModel):
         from_attributes  = True
 
 
-class ShowRole(BaseModel):
+class RoleUsers(BaseModel):
+    id: int
     name: str
     owners: List[User] = []
     class Config:
         from_attributes = True
+
+
+class ShowRole(BaseModel):
+    id: int
+    code: str
+    name: str
 
 
 class ShowFullRole(BaseModel):

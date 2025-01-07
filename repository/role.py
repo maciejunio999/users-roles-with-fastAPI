@@ -15,8 +15,15 @@ def get_one(db: Session, id: int):
     role = db.query(models.Role).filter(models.Role.id == id).first()
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+    return role
+
+
+def get_roles_users(db: Session, id: int):
+    role = db.query(models.Role).filter(models.Role.id == id).first()
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
     owners = [schemas.User.from_orm(u) for u in role.users]
-    return schemas.ShowRole(name=role.name, owners=owners)
+    return schemas.RoleUsers(id=role.id, name=role.name, owners=owners)
 
 
 def create(request: schemas.CreateRole, db: Session):

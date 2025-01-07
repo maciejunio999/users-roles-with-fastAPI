@@ -22,6 +22,11 @@ def get_role(id: int, db: Session = Depends(database.get_db)):
     return role.get_one(db, id)
 
 
+@router.get('/{id}/users', response_model=schemas.RoleUsers)
+def get_roles_users(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+    return role.get_roles_users(db, id)
+
+
 @router.post('/', response_model=schemas.CreateRole)
 def create_role(request: schemas.CreateRole, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return role.create(request, db)
