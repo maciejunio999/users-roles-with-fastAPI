@@ -90,3 +90,19 @@ class CreateRole(BaseModel):
 
 class AddUserToRole(BaseModel):
     user_id: int
+
+
+class ShowFullPilot(BaseModel):
+    id: int
+    name: str
+    code: str
+    users: List[User] = []
+    roles: List[ShowRole] = []
+    class Config:
+        from_attributes = True
+
+class CreatePilot(BaseModel):
+    name: str
+    code: str
+    class Config:
+        from_attributes = True
