@@ -101,7 +101,7 @@ class ShowFullPilot(BaseModel):
     class Config:
         from_attributes = True
 
-class CreatePilot(BaseModel):
+class ShowPilot(BaseModel):
     name: str
     code: str
     class Config:
