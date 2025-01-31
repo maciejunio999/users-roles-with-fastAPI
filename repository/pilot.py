@@ -51,3 +51,20 @@ def update_pilot(db: Session, id: int, request: schemas.ShowPilot):
     db.refresh(pilot)
 
     return pilot
+
+
+def add_role_to_pilot(db: Session, id: int, request: schemas.AddRoleToPilot):
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == id).first()
+    role = db.query(models.Role).filter(models.Role.id == request.role_id).first()
+    
+    if not (pilot and role):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {id} or Role with id: {request.role_id} not found")
+
+    if role not in pilot.roles:
+        pilot.roles.append(role)
+        db.commit()
+        db.refresh(pilot)
+
+    roles = [schemas.ShowRole.from_orm(r) for r in pilot.roles]
+
+    return schemas.ShowPilotAndRoles(name=pilot.name, roles=roles)

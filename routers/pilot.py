@@ -35,3 +35,8 @@ def delete_pilot(id: int, db: Session = Depends(database.get_db)):
 @router.put('/{id}', response_model=schemas.ShowPilot, status_code=status.HTTP_202_ACCEPTED)
 def update_pilot(id: int, request: schemas.ShowPilot, db: Session = Depends(database.get_db)):
     return pilot.update_pilot(db, id, request)
+
+
+@router.put('/{id}/add_role', response_model=schemas.ShowPilotAndRoles, status_code=status.HTTP_202_ACCEPTED)
+def add_role_to_pilot(id: int, request: schemas.AddRoleToPilot, db: Session = Depends(database.get_db)):
+    return pilot.add_role_to_pilot(db, id, request)

@@ -26,6 +26,14 @@ def get_roles_users(db: Session, id: int):
     return schemas.RoleUsers(id=role.id, name=role.name, owners=owners)
 
 
+def get_roles_pilots(db: Session, id: int):
+    role = db.query(models.Role).filter(models.Role.id == id).first()
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
+    pilots = [schemas.ShowPilot.from_orm(u) for u in role.pilots]
+    return schemas.RolePilots(id=role.id, name=role.name, pilots=pilots)
+
+
 def create(request: schemas.CreateRole, db: Session):
     new_role = models.Role(name=request.name, code=request.code)
     db.add(new_role)
