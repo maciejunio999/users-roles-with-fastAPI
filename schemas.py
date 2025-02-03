@@ -74,15 +74,6 @@ class ShowRole(BaseModel):
         from_attributes=True
 
 
-class ShowFullRole(BaseModel):
-    id: int
-    name: str
-    code: str
-    owners: List[User] = []
-    class Config:
-        from_attributes = True
-
-
 class CreateRole(BaseModel):
     name: str
     code: str
@@ -92,6 +83,10 @@ class CreateRole(BaseModel):
 
 class AddUserToRole(BaseModel):
     user_id: int
+
+
+class AddPilotToRole(BaseModel):
+    pilot_id: int
 
 
 class ShowFullPilot(BaseModel):
@@ -125,6 +120,43 @@ class ShowPilotAndRoles(BaseModel):
 class RolePilots(BaseModel):
     id: int
     name: str
+    pilots: List[ShowPilot] = []
+    class Config:
+        from_attributes = True
+
+
+class ShowPilotAndUsers(BaseModel):
+    name: str
+    users: List[ShowUser]
+    class Config:
+        from_attributes = True
+
+
+class AddUserToPilot(BaseModel):
+    user_id: int
+
+
+class PilotRoles(BaseModel):
+    id: int
+    name: str
+    roles: List[ShowRole] = []
+    class Config:
+        from_attributes = True
+
+
+class PilotUsers(BaseModel):
+    id: int
+    name: str
+    users: List[ShowUser] = []
+    class Config:
+        from_attributes = True
+
+
+class ShowFullRole(BaseModel):
+    id: int
+    name: str
+    code: str
+    owners: List[User] = []
     pilots: List[ShowPilot] = []
     class Config:
         from_attributes = True

@@ -69,8 +69,25 @@ def add_user_to_role(db: Session, id: int, request: schemas.AddUserToRole):
     db.refresh(role)
 
     owners = [schemas.User.from_orm(u) for u in role.users]
+    pilots = [schemas.User.from_orm(p) for p in role.pilots]
 
-    return schemas.ShowRole(name=role.name, owners=owners)
+    return schemas.ShowRole(name=role.name, owners=owners, pilots=pilots)
+
+
+def add_pilot_to_role(db: Session, id: int, request: schemas.AddPilotToRole):
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.pilot_id).first()
+    role = db.query(models.Role).options(joinedload(models.Role.users)).filter(models.Role.id == id).first()
+    if not (pilot and role):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.pilot_id} or Role with id: {id} not found")
+    
+    role.pilots.append(pilot)
+    db.commit()
+    db.refresh(role)
+
+    pilots = [schemas.ShowPilot.from_orm(p) for p in role.pilots]
+    owners = [schemas.User.from_orm(u) for u in role.users]
+
+    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners, pilots=pilots)
 
 
 def delete(db: Session, id: int):
@@ -88,11 +105,11 @@ def delete(db: Session, id: int):
 def remove_user_from_role(db: Session, id: int, request: schemas.AddUserToRole):
     role = db.query(models.Role).options(joinedload(models.Role.users)).filter(models.Role.id == id).first()
     if not role:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.role_id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {id} not found")
     
     user = db.query(models.User).filter(models.User.id == request.user_id).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {request.user_id} not found")
     
     if user not in role.users:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Role does not have this user assigned")
