@@ -118,5 +118,27 @@ def remove_user_from_role(db: Session, id: int, request: schemas.AddUserToRole):
     db.commit()
     db.refresh(user)
     owners = [schemas.User.from_orm(u) for u in role.users]
+    pilots = [schemas.ShowPilot.from_orm(u) for u in role.pilots]
 
-    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners)
+    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners, pilots=pilots)
+
+
+def remove_pilot_from_role(db: Session, id: int, request: schemas.AddPilotToRole):
+    role = db.query(models.Role).options(joinedload(models.Role.pilots)).filter(models.Role.id == id).first()
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {id} not found")
+    
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.pilot_id).first()
+    if not pilot:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.pilot_id} not found")
+    
+    if pilot not in role.pilots:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Role does not have this pilot assigned")
+    
+    role.pilots.remove(pilot)
+    db.commit()
+    db.refresh(role)
+    pilots = [schemas.ShowPilot.from_orm(u) for u in role.pilots]
+    owners = [schemas.User.from_orm(u) for u in role.users]
+
+    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, pilots=pilots, owners=owners)
