@@ -3,9 +3,9 @@ from typing import List
 
 
 class User(BaseModel):
-    id: int
     username: str
     email: str
+    password: str
     class Config:
         from_attributes  = True
 
@@ -30,6 +30,7 @@ class ShowUser(BaseModel):
     email: str
     class Config:
         orm_mode = True
+        from_attributes=True
 
 
 class Login(BaseModel):
@@ -61,7 +62,7 @@ class UserRoles(BaseModel):
 class RoleUsers(BaseModel):
     id: int
     name: str
-    owners: List[User] = []
+    owners: List[ShowUser] = []
     class Config:
         from_attributes = True
 
@@ -93,8 +94,16 @@ class ShowFullPilot(BaseModel):
     id: int
     name: str
     code: str
-    users: List[User] = []
+    state: bool
+    users: List[ShowUser] = []
     roles: List[ShowRole] = []
+    class Config:
+        from_attributes = True
+
+
+class CreatePilot(BaseModel):
+    name: str
+    code: str
     class Config:
         from_attributes = True
 
@@ -102,6 +111,7 @@ class ShowFullPilot(BaseModel):
 class ShowPilot(BaseModel):
     name: str
     code: str
+    state: bool
     class Config:
         from_attributes = True
 
@@ -156,7 +166,7 @@ class ShowFullRole(BaseModel):
     id: int
     name: str
     code: str
-    owners: List[User] = []
+    owners: List[ShowUser] = []
     pilots: List[ShowPilot] = []
     class Config:
         from_attributes = True

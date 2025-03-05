@@ -82,7 +82,7 @@ def add_user_to_pilot(db: Session, id: int, request: schemas.AddUserToPilot):
         db.commit()
         db.refresh(pilot)
 
-    users = [schemas.User.from_orm(u) for u in pilot.users]
+    users = [schemas.ShowUser.from_orm(u) for u in pilot.users]
 
     return schemas.ShowPilotAndUsers(name=pilot.name, users=users)
 
@@ -93,6 +93,14 @@ def get_pilots_roles(db: Session, id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id {id} not found")
     roles = [schemas.ShowRole.from_orm(r) for r in pilot.roles]
     return schemas.PilotRoles(id=pilot.id, name=pilot.name, roles=roles)
+
+
+def get_pilots_users(db: Session, id: int):
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == id).first()
+    if not pilot:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id {id} not found")
+    users = [schemas.ShowUser.from_orm(u) for u in pilot.users]
+    return schemas.PilotUsers(id=pilot.id, name=pilot.name, users=users)
 
 
 def remove_role_from_pilot(db: Session, id: int, request: schemas.AddRoleToPilot):

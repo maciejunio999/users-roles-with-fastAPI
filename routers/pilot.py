@@ -25,7 +25,7 @@ def get_pilot(id: int, db: Session = Depends(database.get_db)):
 
 
 @router.post('/', response_model=schemas.ShowPilot)
-def create_pilot(request: schemas.ShowPilot, db: Session = Depends(database.get_db)):
+def create_pilot(request: schemas.CreatePilot, db: Session = Depends(database.get_db)):
     return pilot.create(request, db)
 
 

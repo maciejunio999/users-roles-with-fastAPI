@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, Boolean
 from sqlalchemy.orm import relationship
 
 
@@ -22,24 +22,25 @@ role_pilot_association = Table('role_pilot_association', Base.metadata,
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
-    username = Column(String)
-    email = Column(String)
-    password = Column(String)
+    username = Column(String, unique=True, nullable=False)
+    email = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
     roles = relationship('Role', secondary=user_role_association, back_populates='users')
     pilots = relationship('Pilot', secondary=user_pilot_association, back_populates='users')
 
 class Role(Base):
     __tablename__ = 'roles'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    code = Column(String)
+    name = Column(String, unique=True, nullable=False)
+    code = Column(String, unique=True, nullable=False)
     users = relationship('User', secondary=user_role_association, back_populates='roles')
     pilots = relationship('Pilot', secondary=role_pilot_association, back_populates='roles')
 
 class Pilot(Base):
     __tablename__ = 'pilots'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
-    code = Column(String)
+    name = Column(String, unique=True, nullable=False)
+    code = Column(String, unique=True, nullable=False)
+    state = Column(Boolean, unique=False, default=False, nullable=False)
     roles = relationship('Role', secondary=role_pilot_association, back_populates='pilots')
     users = relationship('User', secondary=user_pilot_association, back_populates='pilots')
