@@ -31,6 +31,17 @@ def get_users_pilots(db: Session, id: int):
     return user
 
 
+def get_users_active_pilots(db: Session, id: int):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+
+    user_active_pilots = [schemas.PilotName(name=pilot.name) for pilot in user.pilots if pilot.state == True]
+    print(user_active_pilots)
+
+    return schemas.UserPilots(id=user.id, username=user.username, pilots=user_active_pilots)
+
+
 def create(request: schemas.User, db: Session):
     new_user = models.User(username=request.username, email=request.email, password=hashing.Hash.bcrypt(request.password))
     db.add(new_user)

@@ -47,6 +47,7 @@ def update_pilot(db: Session, id: int, request: schemas.ShowPilot):
     
     pilot.name = request.name
     pilot.code = request.code
+    pilot.state = request.state
     db.commit()
     db.refresh(pilot)
 

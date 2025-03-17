@@ -19,7 +19,7 @@ def get_users(db: Session = Depends(database.get_db)):
     return user.get_all(db)
 
 
-@router.get('/{id}', response_model=schemas.UserRoles)
+@router.get('/{id}', response_model=schemas.ShowFullUser)
 def get_user(id: int, db: Session = Depends(database.get_db)):
     return user.get_one(db, id)
 
@@ -60,6 +60,12 @@ def remove_role_from_user(id: int, request: schemas.UpdateUserRole, db: Session 
 @router.get('/{id}/pilots', response_model=schemas.UserPilots)
 def get_users_pilots(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return user.get_users_pilots(db, id)
+
+
+@router.get('/{id}/active_pilots', response_model=schemas.UserPilots)
+def get_users_active_pilots(id: int, db: Session = Depends(database.get_db)):
+    return user.get_users_active_pilots(db, id)
+
 
 @router.put('/{id}/add_pilot', status_code=status.HTTP_202_ACCEPTED, response_model=schemas.UserPilots)
 def add_pilot_to_user(id: int, request: schemas.UpdateUserPilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):

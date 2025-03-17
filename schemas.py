@@ -61,6 +61,11 @@ class PilotName(BaseModel):
     name: str
 
 
+class PilotState(BaseModel):
+    name: str
+    state: str
+
+
 class UserRoles(BaseModel):
     id: int
     username: str
@@ -188,3 +193,12 @@ class ShowFullRole(BaseModel):
     pilots: List[ShowPilot] = []
     class Config:
         from_attributes = True
+
+
+class ShowFullUser(BaseModel):
+    username: str
+    email: str
+    roles: List[ShowRole] = []
+    pilots: List[ShowPilot] = []
+    class Config:
+        from_attributes  = True
