@@ -57,7 +57,7 @@ def add_user_to_role(id: int, request: schemas.AddUserToRole, db: Session = Depe
 
 
 @router.delete("/{id}/remove_user", response_model=schemas.ShowFullRole, status_code=status.HTTP_200_OK)
-def remove_role_from_user(id: int, request: schemas.AddUserToRole, db: Session = Depends(database.get_db)):
+def remove_role_from_user(id: int, request: schemas.AddUserToRole, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return role.remove_user_from_role(db=db, id=id, request=request)
 
 ############################################################################################################################################################################################
@@ -69,7 +69,7 @@ def get_roles_pilots(id: int, db: Session = Depends(database.get_db), get_curren
 
 
 @router.put('/{id}/add_pilot', response_model=schemas.ShowFullRole, status_code=status.HTTP_202_ACCEPTED)
-def add_pilot_to_role(id: int, request: schemas.AddPilotToRole, db: Session = Depends(database.get_db)):
+def add_pilot_to_role(id: int, request: schemas.AddPilotToRole, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return role.add_pilot_to_role(db, id, request)
 
 

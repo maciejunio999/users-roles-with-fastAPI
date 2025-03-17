@@ -25,6 +25,12 @@ class UpdateUserRole(BaseModel):
         from_attributes = True
 
 
+class UpdateUserPilot(BaseModel):
+    pilot_id: int
+    class Config:
+        from_attributes = True
+
+
 class ShowUser(BaseModel):
     username: str
     email: str
@@ -51,10 +57,22 @@ class RoleName(BaseModel):
     name: str
 
 
+class PilotName(BaseModel):
+    name: str
+
+
 class UserRoles(BaseModel):
     id: int
     username: str
     roles: List[RoleName] = []
+    class Config:
+        from_attributes  = True
+
+
+class UserPilots(BaseModel):
+    id: int
+    username: str
+    pilots: List[PilotName] = []
     class Config:
         from_attributes  = True
 
