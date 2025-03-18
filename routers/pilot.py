@@ -35,8 +35,20 @@ def delete_pilot(id: int, db: Session = Depends(database.get_db), get_current_us
 
 
 @router.put('/{id}', response_model=schemas.ShowPilot, status_code=status.HTTP_202_ACCEPTED)
-def update_pilot(id: int, request: schemas.ShowPilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+def update_pilot(id: int, request: schemas.CreatePilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.update_pilot(db, id, request)
+
+############################################################################################################################################################################################
+# ACTIVATION
+
+@router.put('/activate/{id}', response_model=schemas.ShowPilot, status_code=status.HTTP_202_ACCEPTED)
+def activate_pilot(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+    return pilot.activate_pilot(db, id)
+
+
+@router.put('/deactivate/{id}', response_model=schemas.ShowPilot, status_code=status.HTTP_202_ACCEPTED)
+def deactivate_pilot(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+    return pilot.deactivate_pilot(db, id)
 
 ############################################################################################################################################################################################
 # ROLES

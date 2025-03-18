@@ -6,7 +6,6 @@ from typing import List
 
 def get_all(db: Session):
     pilots = db.query(models.Pilot).all()
-    print(pilots)
     if not pilots:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"There is none")
     return pilots
@@ -39,7 +38,7 @@ def delete(db: Session, id: int):
     return {'details': 'Pilot Deleted'}
 
 
-def update_pilot(db: Session, id: int, request: schemas.ShowPilot):
+def update_pilot(db: Session, id: int, request: schemas.CreatePilot):
     pilot = db.query(models.Pilot).filter(models.Pilot.id == id).first()
 
     if not pilot:
@@ -47,7 +46,36 @@ def update_pilot(db: Session, id: int, request: schemas.ShowPilot):
     
     pilot.name = request.name
     pilot.code = request.code
-    pilot.state = request.state
+    db.commit()
+    db.refresh(pilot)
+
+    return pilot
+
+
+def activate_pilot(db: Session, id: int):
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == id).first()
+
+    if not pilot:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id {id} not found")
+    if pilot.state:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Pilot with id {id} is already active")
+    
+    pilot.state = True
+    db.commit()
+    db.refresh(pilot)
+
+    return pilot
+
+
+def deactivate_pilot(db: Session, id: int):
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == id).first()
+
+    if not pilot:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id {id} not found")
+    if not pilot.state:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Pilot with id {id} is not active")
+    
+    pilot.state = False
     db.commit()
     db.refresh(pilot)
 

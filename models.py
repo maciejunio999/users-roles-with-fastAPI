@@ -18,6 +18,15 @@ role_pilot_association = Table('role_pilot_association', Base.metadata,
     Column('role_id', Integer, ForeignKey('roles.id'))
 )
 
+module_role_association = Table('module_role_association', Base.metadata,
+    Column('module_id', Integer, ForeignKey('modules.id')),
+    Column('role_id', Integer, ForeignKey('roles.id'))
+)
+
+module_pilot_association = Table('module_pilot_association', Base.metadata,
+    Column('module_id', Integer, ForeignKey('modules.id')),
+    Column('pilot_id', Integer, ForeignKey('pilots.id'))
+)
 
 class User(Base):
     __tablename__ = 'users'
@@ -35,6 +44,7 @@ class Role(Base):
     code = Column(String, unique=True, nullable=False)
     users = relationship('User', secondary=user_role_association, back_populates='roles')
     pilots = relationship('Pilot', secondary=role_pilot_association, back_populates='roles')
+    modules = relationship('Module', secondary=module_role_association, back_populates='roles')
 
 class Pilot(Base):
     __tablename__ = 'pilots'
@@ -44,3 +54,13 @@ class Pilot(Base):
     state = Column(Boolean, unique=False, default=False, nullable=False)
     roles = relationship('Role', secondary=role_pilot_association, back_populates='pilots')
     users = relationship('User', secondary=user_pilot_association, back_populates='pilots')
+    modules = relationship('Module', secondary=module_pilot_association, back_populates='pilots')
+
+class Module(Base):
+    __tablename__ = 'modules'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
+    description = Column(String, unique=True, nullable=False)
+    in_config = Column(Boolean, unique=False, default=False, nullable=False)
+    roles = relationship('Role', secondary=module_role_association, back_populates='modules')
+    pilots = relationship('Pilot', secondary=module_pilot_association, back_populates='modules')

@@ -37,7 +37,6 @@ def get_users_active_pilots(db: Session, id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
 
     user_active_pilots = [schemas.PilotName(name=pilot.name) for pilot in user.pilots if pilot.state == True]
-    print(user_active_pilots)
 
     return schemas.UserPilots(id=user.id, username=user.username, pilots=user_active_pilots)
 

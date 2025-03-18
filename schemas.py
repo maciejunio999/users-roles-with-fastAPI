@@ -202,3 +202,22 @@ class ShowFullUser(BaseModel):
     pilots: List[ShowPilot] = []
     class Config:
         from_attributes  = True
+
+
+class CreateModule(BaseModel):
+    name: str
+    description: str
+
+
+class Module(CreateModule):
+    id: int
+    name: str
+    description: str
+    in_config: bool
+
+
+class ShowFullModule(Module):
+    roles: List[ShowRole] = []
+    pilots: List[ShowPilot] = []
+    class Config:
+        from_attributes  = True
