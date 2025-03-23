@@ -105,11 +105,11 @@ class CreateRole(BaseModel):
         from_attributes = True
 
 
-class AddUserToRole(BaseModel):
+class AddUserById(BaseModel):
     user_id: int
 
 
-class AddPilotToRole(BaseModel):
+class AddPilotById(BaseModel):
     pilot_id: int
 
 
@@ -209,14 +209,30 @@ class CreateModule(BaseModel):
     description: str
 
 
-class Module(CreateModule):
+class FullModule(CreateModule):
     id: int
     name: str
     description: str
     in_config: bool
 
 
-class ShowFullModule(Module):
+class Module(CreateModule):
+    name: str
+    description: str
+    in_config: bool
+
+
+class UpdateModulesPilots(Module):
+    pilot_id: int
+
+
+class ModulePilot(Module):
+    pilots: List[ShowPilot] = []
+    class Config:
+        from_attributes  = True
+
+
+class ShowFullModule(FullModule):
     roles: List[ShowRole] = []
     pilots: List[ShowPilot] = []
     class Config:

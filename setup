@@ -6,3 +6,4 @@ activate evnironment
 
 app start
     uvicorn main:app --reload
+    

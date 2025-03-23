@@ -58,7 +58,7 @@ def update_role(db: Session, id: int, request: schemas.CreateRole):
     return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners)
 
 
-def add_user_to_role(db: Session, id: int, request: schemas.AddUserToRole):
+def add_user_to_role(db: Session, id: int, request: schemas.AddUserById):
     user = db.query(models.User).filter(models.User.id == request.user_id).first()
     role = db.query(models.Role).options(joinedload(models.Role.users)).filter(models.Role.id == id).first()
     if not (user and role):
@@ -74,7 +74,7 @@ def add_user_to_role(db: Session, id: int, request: schemas.AddUserToRole):
     return schemas.ShowRole(name=role.name, owners=owners, pilots=pilots)
 
 
-def add_pilot_to_role(db: Session, id: int, request: schemas.AddPilotToRole):
+def add_pilot_to_role(db: Session, id: int, request: schemas.AddPilotById):
     pilot = db.query(models.Pilot).filter(models.Pilot.id == request.pilot_id).first()
     role = db.query(models.Role).options(joinedload(models.Role.users)).filter(models.Role.id == id).first()
     if not (pilot and role):
@@ -102,7 +102,7 @@ def delete(db: Session, id: int):
     return {'details': 'Role Deleted'}
 
 
-def remove_user_from_role(db: Session, id: int, request: schemas.AddUserToRole):
+def remove_user_from_role(db: Session, id: int, request: schemas.AddUserById):
     role = db.query(models.Role).options(joinedload(models.Role.users)).filter(models.Role.id == id).first()
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {id} not found")
@@ -123,7 +123,7 @@ def remove_user_from_role(db: Session, id: int, request: schemas.AddUserToRole):
     return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners, pilots=pilots)
 
 
-def remove_pilot_from_role(db: Session, id: int, request: schemas.AddPilotToRole):
+def remove_pilot_from_role(db: Session, id: int, request: schemas.AddPilotById):
     role = db.query(models.Role).options(joinedload(models.Role.pilots)).filter(models.Role.id == id).first()
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {id} not found")

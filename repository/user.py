@@ -146,6 +146,4 @@ def remove_pilot_from_user(db: Session, id: int, request: schemas.UpdateUserPilo
     db.commit()
     db.refresh(user)
 
-    user_pilots = [schemas.PilotName(name=pilot.name) for pilot in user.pilots]
-
-    return schemas.UserRoles(id=user.id, username=user.username, pilots=user_pilots)
+    return {'details': 'Pilot removed'}

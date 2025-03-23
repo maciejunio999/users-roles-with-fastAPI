@@ -49,3 +49,46 @@ def update(db: Session, id: int, request: schemas.CreateModule):
     db.refresh(module)
 
     return {'details': 'Module Updated'}
+
+
+def add_pilot_to_module(db: Session, id: int, request: schemas.AddPilotById):
+    module = db.query(models.Module).filter(models.Module.id == id).first()
+    if not module:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Module with id: {id} not found")
+
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.pilot_id).first()
+    if not pilot:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.pilot_id} not found")
+
+    module.pilots.append(pilot)
+    db.commit()
+    db.refresh(module)
+
+    return module
+
+
+def remove_pilot_from_module(db: Session, id: int, request: schemas.AddPilotById):
+    module = db.query(models.Module).filter(models.Module.id == id).first()
+    if not module:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Module with id: {id} not found")
+
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.pilot_id).first()
+    if not pilot:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.pilot_id} not found")
+
+    if pilot not in module.pilots:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Module does not have this pilot")
+
+    module.pilots.remove(pilot)
+    
+    db.commit()
+    db.refresh(module)
+
+    return {'details': 'Pilot removed'}
+
+
+def get_modules_pilots(db: Session, id: int):
+    module = db.query(models.Module).filter(models.Module.id == id).first()
+    if not module:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+    return module
