@@ -61,8 +61,7 @@ class PilotName(BaseModel):
     name: str
 
 
-class PilotState(BaseModel):
-    name: str
+class PilotState(PilotName):
     state: str
 
 
@@ -131,12 +130,8 @@ class CreatePilot(BaseModel):
         from_attributes = True
 
 
-class ShowPilot(BaseModel):
-    name: str
-    code: str
+class ShowPilot(CreatePilot):
     state: bool
-    class Config:
-        from_attributes = True
 
 
 class AddRoleToPilot(BaseModel):
@@ -204,6 +199,9 @@ class ShowFullUser(BaseModel):
         from_attributes  = True
 
 
+############################################################################################################################################################################################
+# MODULES
+
 class CreateModule(BaseModel):
     name: str
     description: str
@@ -227,7 +225,7 @@ class UpdateModulesPilots(Module):
 
 
 class ModulePilot(Module):
-    pilots: List[ShowPilot] = []
+    pilots: List[PilotName] = []
     class Config:
         from_attributes  = True
 
@@ -237,3 +235,10 @@ class ShowFullModule(FullModule):
     pilots: List[ShowPilot] = []
     class Config:
         from_attributes  = True
+
+
+############################################################################################################################################################################################
+# MENU
+
+class GetMenu(BaseModel):
+    modules: List[ShowFullModule] = []

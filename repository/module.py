@@ -92,3 +92,13 @@ def get_modules_pilots(db: Session, id: int):
     if not module:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
     return module
+
+
+def get_modules_active_pilots(db: Session, id: int):
+    module = db.query(models.Module).filter(models.Module.id == id).first()
+    if not module:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+    
+    module_active_pilots = [schemas.PilotName(name=pilot.name) for pilot in module.pilots if pilot.state == True]
+
+    return schemas.ModulePilot(name=module.name, description=module.description, in_config = module.in_config, pilots=module_active_pilots)
