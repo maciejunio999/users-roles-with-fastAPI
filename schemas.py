@@ -215,8 +215,6 @@ class FullModule(CreateModule):
 
 
 class Module(CreateModule):
-    name: str
-    description: str
     in_config: bool
 
 
@@ -225,7 +223,7 @@ class UpdateModulesPilots(Module):
 
 
 class ModulePilot(Module):
-    pilots: List[PilotName] = []
+    pilots: List[ShowPilot] = []
     class Config:
         from_attributes  = True
 
@@ -239,6 +237,3 @@ class ShowFullModule(FullModule):
 
 ############################################################################################################################################################################################
 # MENU
-
-class GetMenu(BaseModel):
-    modules: List[ShowFullModule] = []

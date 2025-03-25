@@ -11,6 +11,7 @@ router = APIRouter(
     tags = ['Modules']
 )
 
+
 ############################################################################################################################################################################################
 # BASIC
 
@@ -34,9 +35,23 @@ def delete_module(id: int, db: Session = Depends(database.get_db), get_current_u
     return module.delete(db, id)
 
 
-@router.put('/{id}', status_code=status.HTTP_202_ACCEPTED)
+@router.put('/{id}', response_model=schemas.Module, status_code=status.HTTP_202_ACCEPTED)
 def update_module(id: int, request: schemas.CreateModule, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return module.update(db, id, request)
+
+
+############################################################################################################################################################################################
+# ACTIVATION
+
+@router.put('/activate/{id}', response_model=schemas.Module, status_code=status.HTTP_202_ACCEPTED)
+def activate_module(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+    return module.activate_module(db, id)
+
+
+@router.put('/deactivate/{id}', response_model=schemas.Module, status_code=status.HTTP_202_ACCEPTED)
+def deactivate_module(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+    return module.deactivate_module(db, id)
+
 
 ############################################################################################################################################################################################
 # PILOTS

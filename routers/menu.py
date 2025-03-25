@@ -14,6 +14,6 @@ router = APIRouter(
 ############################################################################################################################################################################################
 # BASIC
 
-@router.get('/{user_id}', response_model=List[schemas.GetMenu])
-def get_menu(user_id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.get('/{user_id}', response_model=List[schemas.ModulePilot])
+def get_menu(user_id: int, db: Session = Depends(database.get_db)):
     return menu.get_menu(db, user_id)

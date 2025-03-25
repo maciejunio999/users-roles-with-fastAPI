@@ -102,3 +102,33 @@ def get_modules_active_pilots(db: Session, id: int):
     module_active_pilots = [schemas.PilotName(name=pilot.name) for pilot in module.pilots if pilot.state == True]
 
     return schemas.ModulePilot(name=module.name, description=module.description, in_config = module.in_config, pilots=module_active_pilots)
+
+
+def activate_module(db: Session, id: int):
+    module = db.query(models.Module).filter(models.Module.id == id).first()
+
+    if not module:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Module with id {id} not found")
+    if module.in_config:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Module with id {id} is already active")
+    
+    module.in_config = True
+    db.commit()
+    db.refresh(module)
+
+    return module
+
+
+def deactivate_module(db: Session, id: int):
+    module = db.query(models.Module).filter(models.Module.id == id).first()
+
+    if not module:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Module with id {id} not found")
+    if not module.in_config:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Module with id {id} is not active")
+    
+    module.in_config = False
+    db.commit()
+    db.refresh(module)
+
+    return module
