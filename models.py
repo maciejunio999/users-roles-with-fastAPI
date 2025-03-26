@@ -34,17 +34,17 @@ class User(Base):
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
-    roles = relationship('Role', secondary=user_role_association, back_populates='users')
-    pilots = relationship('Pilot', secondary=user_pilot_association, back_populates='users')
+    roles = relationship('Role', secondary=user_role_association, back_populates='users', cascade="all, delete")
+    pilots = relationship('Pilot', secondary=user_pilot_association, back_populates='users', cascade="all, delete")
 
 class Role(Base):
     __tablename__ = 'roles'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     code = Column(String, unique=True, nullable=False)
-    users = relationship('User', secondary=user_role_association, back_populates='roles')
-    pilots = relationship('Pilot', secondary=role_pilot_association, back_populates='roles')
-    modules = relationship('Module', secondary=module_role_association, back_populates='roles')
+    users = relationship('User', secondary=user_role_association, back_populates='roles', cascade="all, delete")
+    pilots = relationship('Pilot', secondary=role_pilot_association, back_populates='roles', cascade="all, delete")
+    modules = relationship('Module', secondary=module_role_association, back_populates='roles', cascade="all, delete")
 
 class Pilot(Base):
     __tablename__ = 'pilots'
@@ -52,9 +52,9 @@ class Pilot(Base):
     name = Column(String, unique=True, nullable=False)
     code = Column(String, unique=True, nullable=False)
     state = Column(Boolean, unique=False, default=False, nullable=False)
-    roles = relationship('Role', secondary=role_pilot_association, back_populates='pilots')
-    users = relationship('User', secondary=user_pilot_association, back_populates='pilots')
-    modules = relationship('Module', secondary=module_pilot_association, back_populates='pilots')
+    roles = relationship('Role', secondary=role_pilot_association, back_populates='pilots', cascade="all, delete")
+    users = relationship('User', secondary=user_pilot_association, back_populates='pilots', cascade="all, delete")
+    modules = relationship('Module', secondary=module_pilot_association, back_populates='pilots', cascade="all, delete")
 
 class Module(Base):
     __tablename__ = 'modules'
@@ -62,5 +62,5 @@ class Module(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(String, unique=True, nullable=False)
     in_config = Column(Boolean, unique=False, default=False, nullable=False)
-    roles = relationship('Role', secondary=module_role_association, back_populates='modules')
-    pilots = relationship('Pilot', secondary=module_pilot_association, back_populates='modules')
+    roles = relationship('Role', secondary=module_role_association, back_populates='modules', cascade="all, delete")
+    pilots = relationship('Pilot', secondary=module_pilot_association, back_populates='modules', cascade="all, delete")

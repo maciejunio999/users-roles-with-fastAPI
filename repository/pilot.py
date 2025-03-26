@@ -108,8 +108,18 @@ def add_user_to_pilot(db: Session, id: int, request: schemas.AddUserToPilot):
 
     if user not in pilot.users:
         pilot.users.append(user)
+
+        user_role_ids = {r.id for r in user.roles}
+
+        for role in pilot.roles:
+            if role.id not in user_role_ids:
+                user.roles.append(role)
+
         db.commit()
+        db.refresh(user)
         db.refresh(pilot)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Pilot with id: {id} is assigned to User with id: {request.user_id}")
 
     users = [schemas.ShowUser.from_orm(u) for u in pilot.users]
 
