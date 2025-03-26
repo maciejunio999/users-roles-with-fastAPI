@@ -3,6 +3,9 @@ import models, schemas, hashing
 from fastapi import status, HTTPException
 
 
+############################################################################################################################################################################################
+# BASIC
+
 def get_all(db: Session):
     users = db.query(models.User).all()
     if not users:
@@ -15,30 +18,6 @@ def get_one(db: Session, id: int):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
     return user
-
-
-def get_users_roles(db: Session, id: int):
-    user = db.query(models.User).filter(models.User.id == id).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
-    return user
-
-
-def get_users_pilots(db: Session, id: int):
-    user = db.query(models.User).filter(models.User.id == id).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
-    return user
-
-
-def get_users_active_pilots(db: Session, id: int):
-    user = db.query(models.User).filter(models.User.id == id).first()
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
-
-    user_active_pilots = [schemas.PilotName(name=pilot.name) for pilot in user.pilots if pilot.state == True]
-
-    return schemas.UserPilots(id=user.id, username=user.username, pilots=user_active_pilots)
 
 
 def create(request: schemas.User, db: Session):
@@ -61,7 +40,7 @@ def delete(db: Session, id: int):
     return {'details': 'User Deleted'}
 
 
-def update(db: Session, id: int, request: schemas.UpdateUser):
+def update(db: Session, id: int, request: schemas.User):
     user = db.query(models.User).filter(models.User.id == id).first()
 
     if not user:
@@ -69,20 +48,31 @@ def update(db: Session, id: int, request: schemas.UpdateUser):
     
     user.username = request.username
     user.email = request.email
+    user.password = request.password
     db.commit()
     db.refresh(user)
 
     return {'details': 'User Updated'}
 
 
-def add_role_to_user(db: Session, id: int, request: schemas.UpdateUserRole):
+############################################################################################################################################################################################
+# ROLES
+
+def get_users_roles(db: Session, id: int):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+    return user
+
+
+def add_role_to_user(db: Session, id: int, request: schemas.AddById):
     user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
 
-    role = db.query(models.Role).filter(models.Role.id == request.role_id).first()
+    role = db.query(models.Role).filter(models.Role.id == request.id).first()
     if not role:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.role_id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.id} not found")
     if role in user.roles:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already has this role")
 
@@ -93,14 +83,14 @@ def add_role_to_user(db: Session, id: int, request: schemas.UpdateUserRole):
     return user
 
 
-def remove_role_from_user(db: Session, id: int, request: schemas.UpdateUserRole):
+def remove_role_from_user(db: Session, id: int, request: schemas.AddById):
     user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
 
-    role = db.query(models.Role).filter(models.Role.id == request.role_id).first()
+    role = db.query(models.Role).filter(models.Role.id == request.id).first()
     if not role:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.role_id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.id} not found")
 
     if role not in user.roles:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User does not have this role")
@@ -110,19 +100,39 @@ def remove_role_from_user(db: Session, id: int, request: schemas.UpdateUserRole)
     db.commit()
     db.refresh(user)
 
-    user_roles = [schemas.RoleName(name=role.name) for role in user.roles]
+    user_roles = [schemas.CreateRole(name=role.name) for role in user.roles]
 
     return schemas.UserRoles(id=user.id, username=user.username, roles=user_roles)
 
 
-def add_pilot_to_user(db: Session, id: int, request: schemas.UpdateUserPilot):
+############################################################################################################################################################################################
+# PILOTS
+
+def get_users_pilots(db: Session, id: int):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+    return user
+
+
+def get_users_active_pilots(db: Session, id: int):
+    user = db.query(models.User).filter(models.User.id == id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+
+    user_active_pilots = [schemas.ShowPilot(name=pilot.name) for pilot in user.pilots if pilot.state == True]
+
+    return schemas.UserPilots(id=user.id, username=user.username, pilots=user_active_pilots)
+
+
+def add_pilot_to_user(db: Session, id: int, request: schemas.AddById):
     user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
 
-    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.pilot_id).first()
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.id).first()
     if not pilot:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.pilot_id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.id} not found")
 
     user.pilots.append(pilot)
 
@@ -138,14 +148,14 @@ def add_pilot_to_user(db: Session, id: int, request: schemas.UpdateUserPilot):
     return user
 
 
-def remove_pilot_from_user(db: Session, id: int, request: schemas.UpdateUserPilot):
+def remove_pilot_from_user(db: Session, id: int, request: schemas.AddById):
     user = db.query(models.User).filter(models.User.id == id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {id} not found")
 
-    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.pilot_id).first()
+    pilot = db.query(models.Pilot).filter(models.Pilot.id == request.id).first()
     if not pilot:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.pilot_id} not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.id} not found")
 
     if pilot not in user.pilots:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User does not have this pilot")

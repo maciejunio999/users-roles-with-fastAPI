@@ -42,9 +42,9 @@ class Role(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     code = Column(String, unique=True, nullable=False)
+    description = Column(String, unique=True, nullable=False)
     users = relationship('User', secondary=user_role_association, back_populates='roles', cascade="all, delete")
     pilots = relationship('Pilot', secondary=role_pilot_association, back_populates='roles', cascade="all, delete")
-    modules = relationship('Module', secondary=module_role_association, back_populates='roles', cascade="all, delete")
 
 class Pilot(Base):
     __tablename__ = 'pilots'
@@ -52,6 +52,7 @@ class Pilot(Base):
     name = Column(String, unique=True, nullable=False)
     code = Column(String, unique=True, nullable=False)
     state = Column(Boolean, unique=False, default=False, nullable=False)
+    description = Column(String, unique=True, nullable=False)
     roles = relationship('Role', secondary=role_pilot_association, back_populates='pilots', cascade="all, delete")
     users = relationship('User', secondary=user_pilot_association, back_populates='pilots', cascade="all, delete")
     modules = relationship('Module', secondary=module_pilot_association, back_populates='pilots', cascade="all, delete")
@@ -62,5 +63,4 @@ class Module(Base):
     name = Column(String, unique=True, nullable=False)
     description = Column(String, unique=True, nullable=False)
     in_config = Column(Boolean, unique=False, default=False, nullable=False)
-    roles = relationship('Role', secondary=module_role_association, back_populates='modules', cascade="all, delete")
     pilots = relationship('Pilot', secondary=module_pilot_association, back_populates='modules', cascade="all, delete")

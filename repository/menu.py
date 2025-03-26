@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session, joinedload
-import models, schemas
+import models
 from fastapi import status, HTTPException
-from typing import List
 
 
 def get_menu(db: Session, user_id: int):
