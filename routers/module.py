@@ -67,10 +67,10 @@ def get_modules_active_pilots(id: int, db: Session = Depends(database.get_db), g
 
 
 @router.put('/{id}/add_pilot', response_model=schemas.ModulePilot, status_code=status.HTTP_202_ACCEPTED)
-def add_pilot_to_module(id: int, request: schemas.AddPilotById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+def add_pilot_to_module(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return module.add_pilot_to_module(db, id, request)
 
 
 @router.delete('/{id}/remove_pilot', status_code=status.HTTP_204_NO_CONTENT)
-def remove_pilot_from_module(id: int, request: schemas.AddPilotById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+def remove_pilot_from_module(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return module.remove_pilot_from_module(db, id, request)

@@ -5,6 +5,7 @@ from typing import List
 class AddById(BaseModel):
     id: int
 
+
 ############################################################################################################################################################################################
 # ROLES
 
@@ -20,12 +21,12 @@ class ShowRole(CreateRole):
 ############################################################################################################################################################################################
 # PILOTS
 
-class CretePilot(BaseModel):
+class CreatePilot(BaseModel):
     name: str
     code: str
     description: str
 
-class ShowPilot(CretePilot):
+class ShowPilot(CreatePilot):
     pilot_id: int
     state: bool
 
@@ -40,21 +41,17 @@ class CreateModule(BaseModel):
     name: str
     description: str
 
-
 class FullModule(CreateModule):
     id: int
     name: str
     description: str
     in_config: bool
 
-
 class Module(CreateModule):
     in_config: bool
 
-
 class UpdateModulesPilots(Module):
     pilot_id: int
-
 
 class ModulePilot(Module):
     pilots: List[ShowPilot] = []
@@ -68,44 +65,64 @@ class ModulePilot(Module):
 class UserId(BaseModel):
     id: int
 
-
 class User(BaseModel):
     username: str
     email: str
     password: str
 
-
 class UserInDB(User):
     hashed_password: str
-
 
 class ShowUser(UserId):
     username: str
     email: str
 
-
 class Login(BaseModel):
     username: str
     password: str
-
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
-
 class TokenData(BaseModel):
     email: str | None = None
-
 
 class UserRoles(ShowUser):
     roles: List[ShowRole] = []
     class Config:
         from_attributes  = True
 
-
 class UserPilots(ShowUser):
     pilots: List[ShowPilot] = []
+    class Config:
+        from_attributes  = True
+
+
+############################################################################################################################################################################################
+# ROLES + REST
+
+class RolePilots(ShowRole):
+    pilots: List[ShowPilot] = []
+    class Config:
+        from_attributes  = True
+
+class RoleUsers(ShowRole):
+    owners: List[ShowUser] = []
+    class Config:
+        from_attributes  = True
+
+
+############################################################################################################################################################################################
+# PILOTS + REST
+
+class PilotRoles(ShowPilot):
+    roles: List[ShowRole] = []
+    class Config:
+        from_attributes  = True
+
+class PilotUsers(ShowPilot):
+    users: List[ShowUser] = []
     class Config:
         from_attributes  = True
 

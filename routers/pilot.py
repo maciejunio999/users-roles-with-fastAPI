@@ -38,6 +38,7 @@ def delete_pilot(id: int, db: Session = Depends(database.get_db), get_current_us
 def update_pilot(id: int, request: schemas.CreatePilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.update_pilot(db, id, request)
 
+
 ############################################################################################################################################################################################
 # ACTIVATION
 
@@ -45,10 +46,10 @@ def update_pilot(id: int, request: schemas.CreatePilot, db: Session = Depends(da
 def activate_pilot(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.activate_pilot(db, id)
 
-
 @router.put('/deactivate/{id}', response_model=schemas.ShowPilot, status_code=status.HTTP_202_ACCEPTED)
 def deactivate_pilot(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.deactivate_pilot(db, id)
+
 
 ############################################################################################################################################################################################
 # ROLES
@@ -58,14 +59,15 @@ def get_pilots_roles(id: int, db: Session = Depends(database.get_db)):
     return pilot.get_pilots_roles(db, id)
 
 
-@router.put('/{id}/add_role', response_model=schemas.ShowPilotAndRoles, status_code=status.HTTP_202_ACCEPTED)
-def add_role_to_pilot(id: int, request: schemas.AddRoleToPilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.put('/{id}/add_role', response_model=schemas.PilotRoles, status_code=status.HTTP_202_ACCEPTED)
+def add_role_to_pilot(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.add_role_to_pilot(db, id, request)
 
 
-@router.delete("/{id}/remove_role", response_model=schemas.ShowPilotAndRoles, status_code=status.HTTP_200_OK)
-def remove_role_from_pilot(id: int, request: schemas.AddRoleToPilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.delete("/{id}/remove_role", response_model=schemas.PilotRoles, status_code=status.HTTP_200_OK)
+def remove_role_from_pilot(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.remove_role_from_pilot(db=db, id=id, request=request)
+
 
 ############################################################################################################################################################################################
 # USERS
@@ -75,11 +77,11 @@ def get_pilots_users(id: int, db: Session = Depends(database.get_db)):
     return pilot.get_pilots_users(db, id)
 
 
-@router.put('/{id}/add_user', response_model=schemas.ShowPilotAndUsers, status_code=status.HTTP_202_ACCEPTED)
-def add_user_to_pilot(id: int, request: schemas.AddUserToPilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.put('/{id}/add_user', response_model=schemas.PilotUsers, status_code=status.HTTP_202_ACCEPTED)
+def add_user_to_pilot(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.add_user_to_pilot(db, id, request)
 
 
-@router.delete("/{id}/remove_user", response_model=schemas.ShowPilotAndUsers, status_code=status.HTTP_200_OK)
-def remove_user_from_pilot(id: int, request: schemas.AddUserToPilot, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
+@router.delete("/{id}/remove_user", response_model=schemas.PilotUsers, status_code=status.HTTP_200_OK)
+def remove_user_from_pilot(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.remove_user_from_pilot(db=db, id=id, request=request)
