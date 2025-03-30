@@ -22,7 +22,7 @@ def get_one(db: Session, id: int):
 
 
 def create(request: schemas.CreatePilot, db: Session):
-    new_pilot = models.Pilot(name=request.name, code=request.code)
+    new_pilot = models.Pilot(name=request.name, code=request.code, description=request.description)
     db.add(new_pilot)
     db.commit()
     db.refresh(new_pilot)

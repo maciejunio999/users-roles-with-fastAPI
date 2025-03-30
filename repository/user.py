@@ -100,9 +100,7 @@ def remove_role_from_user(db: Session, id: int, request: schemas.AddById):
     db.commit()
     db.refresh(user)
 
-    user_roles = [schemas.CreateRole(name=role.name) for role in user.roles]
-
-    return schemas.UserRoles(id=user.id, username=user.username, roles=user_roles)
+    return {'details': 'Role removed'}
 
 
 ############################################################################################################################################################################################

@@ -16,13 +16,14 @@ def get_all(db: Session):
 
 def get_one(db: Session, id: int):
     role = db.query(models.Role).filter(models.Role.id == id).first()
+    print(role.id, role.name)
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
     return role
 
 
 def create(request: schemas.CreateRole, db: Session):
-    new_role = models.Role(name=request.name, code=request.code)
+    new_role = models.Role(name=request.name, code=request.code, description=request.description)
     db.add(new_role)
     db.commit()
     db.refresh(new_role)

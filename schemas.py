@@ -15,7 +15,7 @@ class CreateRole(BaseModel):
     description: str
 
 class ShowRole(CreateRole):
-    role_id: int
+    id: int
 
 
 ############################################################################################################################################################################################
@@ -27,7 +27,7 @@ class CreatePilot(BaseModel):
     description: str
 
 class ShowPilot(CreatePilot):
-    pilot_id: int
+    id: int
     state: bool
 
 class UpdatePilotState(BaseModel):
@@ -50,9 +50,6 @@ class FullModule(CreateModule):
 class Module(CreateModule):
     in_config: bool
 
-class UpdateModulesPilots(Module):
-    pilot_id: int
-
 class ModulePilot(Module):
     pilots: List[ShowPilot] = []
     class Config:
@@ -62,8 +59,10 @@ class ModulePilot(Module):
 ############################################################################################################################################################################################
 # USERS
 
-class UserId(BaseModel):
-    id: int
+class ShowUser(BaseModel):
+    username: str
+    email: str
+
 
 class User(BaseModel):
     username: str
@@ -73,9 +72,8 @@ class User(BaseModel):
 class UserInDB(User):
     hashed_password: str
 
-class ShowUser(UserId):
-    username: str
-    email: str
+class UserId(ShowUser):
+    id: int
 
 class Login(BaseModel):
     username: str
@@ -88,12 +86,12 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: str | None = None
 
-class UserRoles(ShowUser):
+class UserRoles(UserId):
     roles: List[ShowRole] = []
     class Config:
         from_attributes  = True
 
-class UserPilots(ShowUser):
+class UserPilots(UserId):
     pilots: List[ShowPilot] = []
     class Config:
         from_attributes  = True
