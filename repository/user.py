@@ -118,9 +118,9 @@ def get_users_active_pilots(db: Session, id: int):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
 
-    user_active_pilots = [schemas.ShowPilot(name=pilot.name) for pilot in user.pilots if pilot.state == True]
+    user_active_pilots = [schemas.ShowPilot.from_orm(pilot) for pilot in user.pilots if pilot.state == True]
 
-    return schemas.UserPilots(id=user.id, username=user.username, pilots=user_active_pilots)
+    return schemas.UserPilots(id=user.id, email=user.email, username=user.username, pilots=user_active_pilots)
 
 
 def add_pilot_to_user(db: Session, id: int, request: schemas.AddById):

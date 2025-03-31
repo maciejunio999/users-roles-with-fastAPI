@@ -13,6 +13,8 @@ class CreateRole(BaseModel):
     name: str
     code: str
     description: str
+    class Config:
+        from_attributes  = True
 
 class ShowRole(CreateRole):
     id: int
@@ -25,6 +27,8 @@ class CreatePilot(BaseModel):
     name: str
     code: str
     description: str
+    class Config:
+        from_attributes  = True
 
 class ShowPilot(CreatePilot):
     id: int
@@ -62,7 +66,8 @@ class ModulePilot(Module):
 class ShowUser(BaseModel):
     username: str
     email: str
-
+    class Config:
+        from_attributes  = True
 
 class User(BaseModel):
     username: str
@@ -88,27 +93,18 @@ class TokenData(BaseModel):
 
 class UserRoles(UserId):
     roles: List[ShowRole] = []
-    class Config:
-        from_attributes  = True
 
 class UserPilots(UserId):
     pilots: List[ShowPilot] = []
-    class Config:
-        from_attributes  = True
-
 
 ############################################################################################################################################################################################
 # ROLES + REST
 
 class RolePilots(ShowRole):
     pilots: List[ShowPilot] = []
-    class Config:
-        from_attributes  = True
 
 class RoleUsers(ShowRole):
-    owners: List[ShowUser] = []
-    class Config:
-        from_attributes  = True
+    users: List[ShowUser] = []
 
 
 ############################################################################################################################################################################################
@@ -116,13 +112,9 @@ class RoleUsers(ShowRole):
 
 class PilotRoles(ShowPilot):
     roles: List[ShowRole] = []
-    class Config:
-        from_attributes  = True
 
 class PilotUsers(ShowPilot):
     users: List[ShowUser] = []
-    class Config:
-        from_attributes  = True
 
 
 ############################################################################################################################################################################################
@@ -141,13 +133,9 @@ class ShowFullModule(FullModule):
         from_attributes  = True
 
 class ShowFullRole(ShowRole):
-    owners: List[ShowUser] = []
+    users: List[ShowUser] = []
     pilots: List[ShowPilot] = []
-    class Config:
-        from_attributes = True
 
 class ShowFullPilot(ShowPilot):
     users: List[ShowUser] = []
     roles: List[ShowRole] = []
-    class Config:
-        from_attributes = True

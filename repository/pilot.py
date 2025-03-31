@@ -99,7 +99,7 @@ def get_pilots_roles(db: Session, id: int):
     
     roles = [schemas.ShowRole.from_orm(r) for r in pilot.roles]
 
-    return schemas.PilotRoles(id=pilot.id, name=pilot.name, roles=roles)
+    return schemas.PilotRoles(id=pilot.id, name=pilot.name, code=pilot.code, description=pilot.description, state=pilot.state, roles=roles)
 
 
 def add_role_to_pilot(db: Session, id: int, request: schemas.AddById):
@@ -116,7 +116,7 @@ def add_role_to_pilot(db: Session, id: int, request: schemas.AddById):
 
     roles = [schemas.ShowRole.from_orm(r) for r in pilot.roles]
 
-    return schemas.PilotRoles(name=pilot.name, roles=roles)
+    return schemas.PilotRoles(id=pilot.id, name=pilot.name, code=pilot.code, description=pilot.description, state=pilot.state, roles=roles)
 
 
 def remove_role_from_pilot(db: Session, id: int, request: schemas.AddById):
@@ -135,9 +135,7 @@ def remove_role_from_pilot(db: Session, id: int, request: schemas.AddById):
     db.commit()
     db.refresh(pilot)
 
-    roles = [schemas.ShowRole.from_orm(r) for r in pilot.roles]
-
-    return schemas.PilotRoles(name=pilot.name, roles=roles)
+    return {'details': 'Role Deleted'}
 
 
 ############################################################################################################################################################################################
@@ -151,7 +149,7 @@ def get_pilots_users(db: Session, id: int):
     
     users = [schemas.ShowUser.from_orm(u) for u in pilot.users]
 
-    return schemas.PilotUsers(id=pilot.id, name=pilot.name, users=users)
+    return schemas.PilotUsers(id=pilot.id, name=pilot.name, code=pilot.code, description=pilot.description, state=pilot.state, users=users)
 
 
 def add_user_to_pilot(db: Session, id: int, request: schemas.AddById):
@@ -174,11 +172,11 @@ def add_user_to_pilot(db: Session, id: int, request: schemas.AddById):
         db.refresh(user)
         db.refresh(pilot)
     else:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Pilot with id: {id} is assigned to User with id: {request.user_id}")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Pilot with id: {id} is assigned to User with id: {request.id}")
 
     users = [schemas.ShowUser.from_orm(u) for u in pilot.users]
 
-    return schemas.PilotUsers(name=pilot.name, users=users)
+    return schemas.PilotUsers(id=pilot.id, name=pilot.name, code=pilot.code, description=pilot.description, state=pilot.state, users=users)
 
 
 def remove_user_from_pilot(db: Session, id: int, request: schemas.AddById):
@@ -186,7 +184,7 @@ def remove_user_from_pilot(db: Session, id: int, request: schemas.AddById):
     if not pilot:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.id} not found")
     
-    user = db.query(models.User).filter(models.User.id == request.user_id).first()
+    user = db.query(models.User).filter(models.User.id == request.id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {request.id} not found")
     
@@ -197,6 +195,4 @@ def remove_user_from_pilot(db: Session, id: int, request: schemas.AddById):
     db.commit()
     db.refresh(pilot)
 
-    users = [schemas.ShowUser.from_orm(u) for u in pilot.users]
-
-    return schemas.PilotUsers(name=pilot.name, users=users)
+    return {'details': 'Role Deleted'}

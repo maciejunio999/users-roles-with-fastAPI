@@ -64,7 +64,7 @@ def add_role_to_pilot(id: int, request: schemas.AddById, db: Session = Depends(d
     return pilot.add_role_to_pilot(db, id, request)
 
 
-@router.delete("/{id}/remove_role", response_model=schemas.PilotRoles, status_code=status.HTTP_200_OK)
+@router.delete("/{id}/remove_role", status_code=status.HTTP_204_NO_CONTENT)
 def remove_role_from_pilot(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.remove_role_from_pilot(db=db, id=id, request=request)
 
@@ -82,6 +82,6 @@ def add_user_to_pilot(id: int, request: schemas.AddById, db: Session = Depends(d
     return pilot.add_user_to_pilot(db, id, request)
 
 
-@router.delete("/{id}/remove_user", response_model=schemas.PilotUsers, status_code=status.HTTP_200_OK)
+@router.delete("/{id}/remove_user", status_code=status.HTTP_204_NO_CONTENT)
 def remove_user_from_pilot(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return pilot.remove_user_from_pilot(db=db, id=id, request=request)

@@ -16,9 +16,9 @@ def get_all(db: Session):
 
 def get_one(db: Session, id: int):
     role = db.query(models.Role).filter(models.Role.id == id).first()
-    print(role.id, role.name)
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
+
     return role
 
 
@@ -38,11 +38,11 @@ def update_role(db: Session, id: int, request: schemas.CreateRole):
     
     role.name = request.name
     role.code = request.code
+    role.description = request.description
     db.commit()
     db.refresh(role)
 
-    owners = [schemas.User.from_orm(u) for u in role.users]
-    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners)
+    return schemas.ShowRole(id=role.id, name=role.name, code=role.code, description=role.description)
 
 
 def delete(db: Session, id: int):
@@ -64,8 +64,8 @@ def get_roles_users(db: Session, id: int):
     role = db.query(models.Role).filter(models.Role.id == id).first()
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
-    owners = [schemas.User.from_orm(u) for u in role.users]
-    return schemas.RoleUsers(id=role.id, name=role.name, owners=owners)
+    users = [schemas.ShowUser.from_orm(u) for u in role.users]
+    return schemas.RoleUsers(id=role.id, name=role.name, code=role.code, description=role.description, users=users)
 
 
 def add_user_to_role(db: Session, id: int, request: schemas.AddById):
@@ -79,10 +79,9 @@ def add_user_to_role(db: Session, id: int, request: schemas.AddById):
     db.commit()
     db.refresh(role)
 
-    owners = [schemas.User.from_orm(u) for u in role.users]
-    pilots = [schemas.User.from_orm(p) for p in role.pilots]
+    users = [schemas.ShowUser.from_orm(u) for u in role.users]
 
-    return schemas.ShowRole(name=role.name, owners=owners, pilots=pilots)
+    return schemas.RoleUsers(id=role.id, name=role.name, code=role.code, description=role.description, users=users)
 
 
 def remove_user_from_role(db: Session, id: int, request: schemas.AddById):
@@ -100,10 +99,8 @@ def remove_user_from_role(db: Session, id: int, request: schemas.AddById):
     role.users.remove(user)
     db.commit()
     db.refresh(user)
-    owners = [schemas.User.from_orm(u) for u in role.users]
-    pilots = [schemas.ShowPilot.from_orm(u) for u in role.pilots]
 
-    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners, pilots=pilots)
+    return {'details': 'User removed'}
 
 
 ############################################################################################################################################################################################
@@ -113,8 +110,8 @@ def get_roles_pilots(db: Session, id: int):
     role = db.query(models.Role).filter(models.Role.id == id).first()
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
-    pilots = [schemas.ShowPilot.from_orm(u) for u in role.pilots]
-    return schemas.RolePilots(id=role.id, name=role.name, pilots=pilots)
+    pilots = [schemas.ShowPilot.from_orm(p) for p in role.pilots]
+    return schemas.RolePilots(id=role.id, name=role.name, code=role.code, description=role.description, pilots=pilots)
 
 
 def add_pilot_to_role(db: Session, id: int, request: schemas.AddById):
@@ -128,9 +125,8 @@ def add_pilot_to_role(db: Session, id: int, request: schemas.AddById):
     db.refresh(role)
 
     pilots = [schemas.ShowPilot.from_orm(p) for p in role.pilots]
-    owners = [schemas.User.from_orm(u) for u in role.users]
 
-    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, owners=owners, pilots=pilots)
+    return schemas.RolePilots(id=role.id, name=role.name, code=role.code, description=role.description, pilots=pilots)
 
 
 def remove_pilot_from_role(db: Session, id: int, request: schemas.AddById):
@@ -148,7 +144,5 @@ def remove_pilot_from_role(db: Session, id: int, request: schemas.AddById):
     role.pilots.remove(pilot)
     db.commit()
     db.refresh(role)
-    pilots = [schemas.ShowPilot.from_orm(u) for u in role.pilots]
-    owners = [schemas.User.from_orm(u) for u in role.users]
 
-    return schemas.ShowFullRole(id=role.id, name=role.name, code=role.code, pilots=pilots, owners=owners)
+    return {'details': 'Pilot removed'}
