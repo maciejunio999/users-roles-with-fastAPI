@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import jwt
 import schemas
-from jwt.exceptions import InvalidTokenError
+from jose import JWTError
 
 
 SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
@@ -25,9 +25,11 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
 def verify_token(token: str, credentials_exception):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        if email is None:
+        email = payload.get("sub")
+        roles = payload.get("roles", None)
+        if email is None or roles is None:
             raise credentials_exception
-        return schemas.TokenData(email=email)
-    except InvalidTokenError:
+        return schemas.TokenData(email=email, roles=roles)
+    except JWTError:
         raise credentials_exception
+ 

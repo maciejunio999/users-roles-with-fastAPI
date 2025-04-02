@@ -48,7 +48,7 @@ def update(db: Session, id: int, request: schemas.User):
     
     user.username = request.username
     user.email = request.email
-    user.password = request.password
+    user.password = hashing.Hash.bcrypt(request.password)
     db.commit()
     db.refresh(user)
 

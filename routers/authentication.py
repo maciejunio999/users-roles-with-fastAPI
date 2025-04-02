@@ -23,7 +23,8 @@ def login(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(
     
     access_token_expires = timedelta(minutes=JWT_token.ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = JWT_token.create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": user.email, "roles": [role.code for role in user.roles]},
+        expires_delta=access_token_expires
     )
 
     return schemas.Token(access_token=access_token, token_type="bearer")

@@ -19,6 +19,10 @@ class CreateRole(BaseModel):
 class ShowRole(CreateRole):
     id: int
 
+class RoleCode(BaseModel):
+    code: str
+    class Config:
+        from_attributes  = True
 
 ############################################################################################################################################################################################
 # PILOTS
@@ -90,6 +94,7 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: str | None = None
+    roles: List[str] | None = None
 
 class UserRoles(UserId):
     roles: List[ShowRole] = []
