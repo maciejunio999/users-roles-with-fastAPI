@@ -18,7 +18,7 @@ def get_one(db: Session, id: int):
     product = db.query(models.Product).filter(models.Product.id == id).first()
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with id {id} not found")
-
+    print(product.id, product.name, product.description, product.state)
     return product
 
 

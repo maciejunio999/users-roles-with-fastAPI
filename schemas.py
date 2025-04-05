@@ -86,7 +86,7 @@ class CreateProduct(BaseModel):
     class Config:
         from_attributes  = True
 
-class ShowProduct(CreatePilot):
+class ShowProduct(CreateProduct):
     id: int
     state: bool
 
