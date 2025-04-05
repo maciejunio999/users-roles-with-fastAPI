@@ -14,10 +14,17 @@ user_pilot_association = Table('user_pilot_association', Base.metadata,
     Column('pilot_id', Integer, ForeignKey('pilots.id'))
 )
 
+user_product_association = Table('user_product_association', Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id')),
+    Column('product_id', Integer, ForeignKey('products.id'))
+)
+
+
 role_pilot_association = Table('role_pilot_association', Base.metadata,
     Column('pilot_id', Integer, ForeignKey('pilots.id')),
     Column('role_id', Integer, ForeignKey('roles.id'))
 )
+
 
 module_role_association = Table('module_role_association', Base.metadata,
     Column('module_id', Integer, ForeignKey('modules.id')),
@@ -34,6 +41,7 @@ module_endpoint_association = Table('module_endpoint_association', Base.metadata
     Column('endpoint_id', Integer, ForeignKey('endpoints.id'))
 )
 
+
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True, index=True)
@@ -42,6 +50,7 @@ class User(Base):
     password = Column(String, nullable=False)
     roles = relationship('Role', secondary=user_role_association, back_populates='users', cascade="all, delete")
     pilots = relationship('Pilot', secondary=user_pilot_association, back_populates='users', cascade="all, delete")
+    products = relationship('Product', secondary=user_product_association, back_populates='users', cascade="all, delete")
 
 class Role(Base):
     __tablename__ = 'roles'
@@ -83,3 +92,11 @@ class Endpoint(Base):
     __table_args__ = (
         CheckConstraint("http_method IN ('_None', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE')", name='valid_http_method'),
     )
+
+class Product(Base):
+    __tablename__ = 'products'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
+    description = Column(String, nullable=False)
+    state = Column(Boolean, unique=False, default=False, nullable=False)
+    users = relationship('User', secondary=user_product_association, back_populates='products', cascade="all, delete")

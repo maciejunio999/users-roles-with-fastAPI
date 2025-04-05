@@ -78,6 +78,23 @@ class ShowEndpoint(CreateModule):
 
 
 ############################################################################################################################################################################################
+# PRODUCTS
+
+class CreateProduct(BaseModel):
+    name: str
+    description: str
+    class Config:
+        from_attributes  = True
+
+class ShowProduct(CreatePilot):
+    id: int
+    state: bool
+
+class UpdateProductState(BaseModel):
+    state: bool
+
+
+############################################################################################################################################################################################
 # USERS
 
 class ShowUser(BaseModel):
@@ -159,3 +176,6 @@ class ShowFullPilot(ShowPilot):
 
 class ShowFullEndpoint(ShowEndpoint):
     modules: List[FullModule] = []
+
+class ShowFullProduct(ShowProduct):
+    users: List[ShowUser] = []

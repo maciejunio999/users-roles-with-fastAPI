@@ -47,10 +47,10 @@ def update_role(db: Session, id: int, request: schemas.CreateRole):
 
 def delete(db: Session, id: int):
     role_query = db.query(models.Role).filter(models.Role.id == id)
-    user = role_query.first()
+    role = role_query.first()
 
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
     
     role_query.delete(synchronize_session=False)
     db.commit()
