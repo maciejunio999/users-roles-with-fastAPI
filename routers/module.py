@@ -56,17 +56,17 @@ def deactivate_module(id: int, db: Session = Depends(database.get_db), get_curre
 ############################################################################################################################################################################################
 # PILOTS
 
-@router.get('/{id}/pilots', response_model=schemas.ModulePilot)
+@router.get('/{id}/pilots', response_model=schemas.ShowFullModule)
 def get_modules_pilots(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return module.get_modules_pilots(db, id)
 
 
-@router.get('/{id}/active_pilots', response_model=schemas.ModulePilot)
+@router.get('/{id}/active_pilots', response_model=schemas.ShowFullModule)
 def get_modules_active_pilots(id: int, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return module.get_modules_active_pilots(db, id)
 
 
-@router.put('/{id}/add_pilot', response_model=schemas.ModulePilot, status_code=status.HTTP_202_ACCEPTED)
+@router.put('/{id}/add_pilot', response_model=schemas.ShowFullModule, status_code=status.HTTP_202_ACCEPTED)
 def add_pilot_to_module(id: int, request: schemas.AddById, db: Session = Depends(database.get_db), get_current_user: schemas.User = Depends(oauth2.get_current_user)):
     return module.add_pilot_to_module(db, id, request)
 

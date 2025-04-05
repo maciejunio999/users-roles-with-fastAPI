@@ -140,4 +140,4 @@ def get_modules_active_pilots(db: Session, id: int):
     
     module_active_pilots = [schemas.PilotName(name=pilot.name) for pilot in module.pilots if pilot.state == True]
 
-    return schemas.ModulePilot(name=module.name, description=module.description, in_config = module.in_config, pilots=module_active_pilots)
+    return schemas.ShowFullModule(name=module.name, description=module.description, in_config = module.in_config, pilots=module_active_pilots)

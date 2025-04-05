@@ -1,6 +1,7 @@
 from database import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Table, Boolean
 from sqlalchemy.orm import relationship
+from sqlalchemy import CheckConstraint
 
 
 user_role_association = Table('user_role_association', Base.metadata,
@@ -26,6 +27,11 @@ module_role_association = Table('module_role_association', Base.metadata,
 module_pilot_association = Table('module_pilot_association', Base.metadata,
     Column('module_id', Integer, ForeignKey('modules.id')),
     Column('pilot_id', Integer, ForeignKey('pilots.id'))
+)
+
+module_endpoint_association = Table('module_endpoint_association', Base.metadata,
+    Column('module_id', Integer, ForeignKey('modules.id')),
+    Column('endpoint_id', Integer, ForeignKey('endpoints.id'))
 )
 
 class User(Base):
@@ -64,3 +70,16 @@ class Module(Base):
     description = Column(String, unique=True, nullable=False)
     in_config = Column(Boolean, unique=False, default=False, nullable=False)
     pilots = relationship('Pilot', secondary=module_pilot_association, back_populates='modules', cascade="all, delete")
+    endpoints = relationship('Endpoint', secondary=module_endpoint_association, back_populates='modules', cascade="all, delete") 
+
+class Endpoint(Base):
+    __tablename__ = 'endpoints'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, nullable=False)
+    url = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    modules = relationship('Module', secondary=module_endpoint_association, back_populates='endpoints', cascade="all, delete")
+    http_method = Column(String, default='_None', nullable=True)
+    __table_args__ = (
+        CheckConstraint("http_method IN ('_None', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE')", name='valid_http_method'),
+    )

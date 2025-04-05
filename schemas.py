@@ -58,10 +58,23 @@ class FullModule(CreateModule):
 class Module(CreateModule):
     in_config: bool
 
-class ModulePilot(Module):
-    pilots: List[ShowPilot] = []
+
+############################################################################################################################################################################################
+# ENDPOINTS
+
+class CreateEndpoint(BaseModel):
+    name: str
+    url: str
+    description: str
     class Config:
         from_attributes  = True
+
+class HttpMethod(BaseModel):
+    http_method: str
+
+class ShowEndpoint(CreateModule):
+    id: int
+    http_method: str
 
 
 ############################################################################################################################################################################################
@@ -132,7 +145,6 @@ class ShowFullUser(ShowUser):
         from_attributes  = True
 
 class ShowFullModule(FullModule):
-    roles: List[ShowRole] = []
     pilots: List[ShowPilot] = []
     class Config:
         from_attributes  = True
@@ -144,3 +156,6 @@ class ShowFullRole(ShowRole):
 class ShowFullPilot(ShowPilot):
     users: List[ShowUser] = []
     roles: List[ShowRole] = []
+
+class ShowFullEndpoint(ShowEndpoint):
+    modules: List[FullModule] = []
