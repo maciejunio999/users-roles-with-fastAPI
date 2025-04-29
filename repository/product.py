@@ -18,11 +18,10 @@ def get_one(db: Session, id: int):
     product = db.query(models.Product).filter(models.Product.id == id).first()
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with id {id} not found")
-    print(product.id, product.name, product.description, product.state)
     return product
 
 
-def create(request: schemas.CreateRole, db: Session):
+def create(request: schemas.CreateProduct, db: Session):
     new_product = models.Product(name=request.name, description=request.description)
     db.add(new_product)
     db.commit()
@@ -30,7 +29,7 @@ def create(request: schemas.CreateRole, db: Session):
     return new_product
 
 
-def update_role(db: Session, id: int, request: schemas.CreateRole):
+def update_product(db: Session, id: int, request: schemas.CreateProduct):
     product = db.query(models.Product).filter(models.Product.id == id).first()
 
     if not product:
@@ -41,7 +40,7 @@ def update_role(db: Session, id: int, request: schemas.CreateRole):
     db.commit()
     db.refresh(product)
 
-    return schemas.ShowRole(id=product.id, name=product.name, description=product.description)
+    return schemas.ShowProduct(id=product.id, name=product.name, description=product.description, state=product.state)
 
 
 def delete(db: Session, id: int):

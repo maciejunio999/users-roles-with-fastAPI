@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 import models, schemas, hashing
 from fastapi import status, HTTPException
+import re
 
 
 ############################################################################################################################################################################################
@@ -21,6 +22,12 @@ def get_one(db: Session, id: int):
 
 
 def create(request: schemas.User, db: Session):
+    if len(db.query(models.User).filter(models.User.username == request.username).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This username is already taken")
+    
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', request.email):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid email address")
+    
     new_user = models.User(username=request.username, email=request.email, password=hashing.Hash.bcrypt(request.password))
     db.add(new_user)
     db.commit()
@@ -46,7 +53,13 @@ def update(db: Session, id: int, request: schemas.User):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id {id} not found")
     
+    users_by_new_username = db.query(models.User).filter(models.User.username == request.username).all()
+    if len(users_by_new_username) >= 1 and user.username != request.username:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This username is already taken")
     user.username = request.username
+
+    if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', request.email):
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Invalid email address")
     user.email = request.email
     user.password = hashing.Hash.bcrypt(request.password)
     db.commit()
