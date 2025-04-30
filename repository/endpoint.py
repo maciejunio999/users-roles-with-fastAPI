@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 import models, schemas
 from fastapi import status, HTTPException
 
@@ -64,3 +64,55 @@ def update(db: Session, id: int, request: schemas.CreateModule):
     db.refresh(endpoint)
 
     return {'details': 'Endpoint Updated'}
+
+
+############################################################################################################################################################################################
+# ROLES
+
+def get_endpoint_roles(db: Session, id: int):
+    endpoint = db.query(models.Endpoint).filter(models.Endpoint.id == id).first()
+
+    if not endpoint:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Endpoint with id {id} not found")
+    
+    roles = [schemas.ShowRole.from_orm(r) for r in endpoint.roles]
+
+    return schemas.EndpointRoles(id=endpoint.id, name=endpoint.name, url=endpoint.url, description=endpoint.description, http_method=endpoint.http_method, roles=roles)
+
+
+def add_role_to_endpoint(db: Session, id: int, request: schemas.AddById):
+    endpoint = db.query(models.Endpoint).filter(models.Endpoint.id == id).first()
+    role = db.query(models.Role).filter(models.Role.id == request.id).first()
+    
+    if not (endpoint and role):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Endpoint with id: {id} or Role with id: {request.id} not found")
+
+    if role not in endpoint.roles:
+        endpoint.roles.append(role)
+        db.commit()
+        db.refresh(endpoint)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Endpoint with id: {id} already has Role with id: {request.id}")
+
+    roles = [schemas.ShowRole.from_orm(r) for r in endpoint.roles]
+
+    return schemas.EndpointRoles(id=endpoint.id, name=endpoint.name, url=endpoint.url, description=endpoint.description, http_method=endpoint.http_method, roles=roles)
+
+
+def remove_role_from_endpoint(db: Session, id: int, request: schemas.AddById):
+    endpoint = db.query(models.Endpoint).options(joinedload(models.Endpoint.roles)).filter(models.Endpoint.id == id).first()
+    if not endpoint:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Endpoint with id: {request.id} not found")
+    
+    role = db.query(models.Role).filter(models.Role.id == request.id).first()
+    if not role:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.id} not found")
+    
+    if role not in endpoint.roles:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Endpoint does not have this role assigned")
+    
+    endpoint.roles.remove(role)
+    db.commit()
+    db.refresh(endpoint)
+
+    return {'details': 'Role Deleted'}

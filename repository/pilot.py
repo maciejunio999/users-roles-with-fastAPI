@@ -124,6 +124,8 @@ def add_role_to_pilot(db: Session, id: int, request: schemas.AddById):
         pilot.roles.append(role)
         db.commit()
         db.refresh(pilot)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Pilot with id: {id} already has Role with id: {request.id}")
 
     roles = [schemas.ShowRole.from_orm(r) for r in pilot.roles]
 
@@ -172,18 +174,17 @@ def add_user_to_pilot(db: Session, id: int, request: schemas.AddById):
 
     if user not in pilot.users:
         pilot.users.append(user)
-
         user_role_ids = {r.id for r in user.roles}
 
         for role in pilot.roles:
             if role.id not in user_role_ids:
                 user.roles.append(role)
-
-        db.commit()
-        db.refresh(user)
-        db.refresh(pilot)
     else:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Pilot with id: {id} is assigned to User with id: {request.id}")
+
+    db.commit()
+    db.refresh(user)
+    db.refresh(pilot)
 
     users = [schemas.ShowUser.from_orm(u) for u in pilot.users]
 

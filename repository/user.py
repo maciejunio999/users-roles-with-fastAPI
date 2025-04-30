@@ -86,8 +86,9 @@ def add_role_to_user(db: Session, id: int, request: schemas.AddById):
     role = db.query(models.Role).filter(models.Role.id == request.id).first()
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id: {request.id} not found")
+    
     if role in user.roles:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already has this role")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User already has this role")
 
     user.roles.append(role)
     db.commit()
@@ -172,6 +173,12 @@ def remove_pilot_from_user(db: Session, id: int, request: schemas.AddById):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"User does not have this pilot")
 
     user.pilots.remove(pilot)
+
+    for role in pilot.roles:
+        if role in user.roles:
+            user.roles.remove(role)
+        else:
+            pass
     
     db.commit()
     db.refresh(user)

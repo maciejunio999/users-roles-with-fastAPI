@@ -41,6 +41,11 @@ module_endpoint_association = Table('module_endpoint_association', Base.metadata
     Column('endpoint_id', Integer, ForeignKey('endpoints.id'))
 )
 
+role_endpoint_association = Table('role_endpoint_association', Base.metadata,
+    Column('endpoint_id', Integer, ForeignKey('endpoints.id')),
+    Column('role_id', Integer, ForeignKey('roles.id'))
+)
+
 
 class User(Base):
     __tablename__ = 'users'
@@ -88,6 +93,7 @@ class Endpoint(Base):
     url = Column(String, unique=True, nullable=False)
     description = Column(String, unique=False, nullable=False)
     modules = relationship('Module', secondary=module_endpoint_association, back_populates='endpoints', cascade="all, delete")
+    roles = relationship('Role', secondary=role_endpoint_association, back_populates='endpoints', cascade="all, delete")
     http_method = Column(String, default='_None', nullable=True)
     __table_args__ = (
         CheckConstraint("http_method IN ('_None', 'GET', 'POST', 'PUT', 'PATCH', 'DELETE')", name='valid_http_method'),

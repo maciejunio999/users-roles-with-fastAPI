@@ -110,10 +110,13 @@ def add_pilot_to_module(db: Session, id: int, request: schemas.AddById):
     pilot = db.query(models.Pilot).filter(models.Pilot.id == request.id).first()
     if not pilot:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.id} not found")
-
-    module.pilots.append(pilot)
-    db.commit()
-    db.refresh(module)
+    
+    if pilot not in module.pilots:
+        module.pilots.append(pilot)
+        db.commit()
+        db.refresh(pilot)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Module with id: {id} already has Pilot with id: {request.id}")
 
     return module
 
@@ -131,7 +134,6 @@ def remove_pilot_from_module(db: Session, id: int, request: schemas.AddById):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Module does not have this pilot")
 
     module.pilots.remove(pilot)
-    
     db.commit()
     db.refresh(module)
 

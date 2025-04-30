@@ -153,6 +153,15 @@ class PilotUsers(ShowPilot):
 
 
 ############################################################################################################################################################################################
+# ENDPOINTS + REST
+
+class EndpointRoles(ShowEndpoint):
+    roles: List[ShowRole] = []
+
+class EndpointModules(ShowEndpoint):
+    modules: List[FullModule] = []
+
+############################################################################################################################################################################################
 # SHOW FULL
 
 class ShowFullUser(ShowUser):
@@ -176,6 +185,7 @@ class ShowFullPilot(ShowPilot):
 
 class ShowFullEndpoint(ShowEndpoint):
     modules: List[FullModule] = []
+    roles: List[ShowRole] = []
 
 class ShowFullProduct(ShowProduct):
     users: List[ShowUser] = []

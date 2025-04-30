@@ -87,9 +87,12 @@ def add_user_to_role(db: Session, id: int, request: schemas.AddById):
     if not (user and role):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"User with id: {request.id} or Role with id: {id} not found")
     
-    role.users.append(user)
-    db.commit()
-    db.refresh(role)
+    if user not in role.users:
+        role.users.append(user)
+        db.commit()
+        db.refresh(role)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Role with id: {id} already has User with id: {request.id}")
 
     users = [schemas.ShowUser.from_orm(u) for u in role.users]
 
@@ -129,12 +132,16 @@ def get_roles_pilots(db: Session, id: int):
 def add_pilot_to_role(db: Session, id: int, request: schemas.AddById):
     pilot = db.query(models.Pilot).filter(models.Pilot.id == request.id).first()
     role = db.query(models.Role).options(joinedload(models.Role.users)).filter(models.Role.id == id).first()
+
     if not (pilot and role):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id: {request.id} or Role with id: {id} not found")
     
-    role.pilots.append(pilot)
-    db.commit()
-    db.refresh(role)
+    if pilot not in role.pilots:
+        role.pilots.append(pilot)
+        db.commit()
+        db.refresh(role)
+    else:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Role with id: {id} already has Pilot with id: {request.id}")
 
     pilots = [schemas.ShowPilot.from_orm(p) for p in role.pilots]
 
