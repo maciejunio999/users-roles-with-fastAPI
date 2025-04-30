@@ -22,6 +22,9 @@ def get_one(db: Session, id: int):
 
 
 def create(request: schemas.CreateProduct, db: Session):
+    if len(db.query(models.Product).filter(models.Product.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
+    
     new_product = models.Product(name=request.name, description=request.description)
     db.add(new_product)
     db.commit()
@@ -34,6 +37,9 @@ def update_product(db: Session, id: int, request: schemas.CreateProduct):
 
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with id {id} not found")
+    
+    if len(db.query(models.Product).filter(models.Product.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
     
     product.name = request.name
     product.description = request.description

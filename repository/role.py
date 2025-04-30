@@ -23,6 +23,12 @@ def get_one(db: Session, id: int):
 
 
 def create(request: schemas.CreateRole, db: Session):
+    if len(db.query(models.Role).filter(models.Role.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
+    
+    if len(db.query(models.Role).filter(models.Role.code == request.code).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
+    
     new_role = models.Role(name=request.name, code=request.code, description=request.description)
     db.add(new_role)
     db.commit()
@@ -35,6 +41,12 @@ def update_role(db: Session, id: int, request: schemas.CreateRole):
 
     if not role:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Role with id {id} not found")
+    
+    if len(db.query(models.Role).filter(models.Role.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
+    
+    if len(db.query(models.Role).filter(models.Role.code == request.code).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
     
     role.name = request.name
     role.code = request.code

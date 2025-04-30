@@ -47,7 +47,7 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, nullable=False)
     email = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
+    password = Column(String, unique=False, nullable=False)
     roles = relationship('Role', secondary=user_role_association, back_populates='users', cascade="all, delete")
     pilots = relationship('Pilot', secondary=user_pilot_association, back_populates='users', cascade="all, delete")
     products = relationship('Product', secondary=user_product_association, back_populates='users', cascade="all, delete")
@@ -57,7 +57,7 @@ class Role(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
     code = Column(String, unique=True, nullable=False)
-    description = Column(String, unique=True, nullable=False)
+    description = Column(String, unique=False, nullable=False)
     users = relationship('User', secondary=user_role_association, back_populates='roles', cascade="all, delete")
     pilots = relationship('Pilot', secondary=role_pilot_association, back_populates='roles', cascade="all, delete")
 
@@ -67,7 +67,7 @@ class Pilot(Base):
     name = Column(String, unique=True, nullable=False)
     code = Column(String, unique=True, nullable=False)
     state = Column(Boolean, unique=False, default=False, nullable=False)
-    description = Column(String, unique=True, nullable=False)
+    description = Column(String, unique=False, nullable=False)
     roles = relationship('Role', secondary=role_pilot_association, back_populates='pilots', cascade="all, delete")
     users = relationship('User', secondary=user_pilot_association, back_populates='pilots', cascade="all, delete")
     modules = relationship('Module', secondary=module_pilot_association, back_populates='pilots', cascade="all, delete")
@@ -76,7 +76,7 @@ class Module(Base):
     __tablename__ = 'modules'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-    description = Column(String, unique=True, nullable=False)
+    description = Column(String, unique=False, nullable=False)
     in_config = Column(Boolean, unique=False, default=False, nullable=False)
     pilots = relationship('Pilot', secondary=module_pilot_association, back_populates='modules', cascade="all, delete")
     endpoints = relationship('Endpoint', secondary=module_endpoint_association, back_populates='modules', cascade="all, delete") 
@@ -85,8 +85,8 @@ class Endpoint(Base):
     __tablename__ = 'endpoints'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-    url = Column(String, nullable=False)
-    description = Column(String, nullable=False)
+    url = Column(String, unique=True, nullable=False)
+    description = Column(String, unique=False, nullable=False)
     modules = relationship('Module', secondary=module_endpoint_association, back_populates='endpoints', cascade="all, delete")
     http_method = Column(String, default='_None', nullable=True)
     __table_args__ = (
@@ -97,6 +97,6 @@ class Product(Base):
     __tablename__ = 'products'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, nullable=False)
-    description = Column(String, nullable=False)
+    description = Column(String, unique=False, nullable=False)
     state = Column(Boolean, unique=False, default=False, nullable=False)
     users = relationship('User', secondary=user_product_association, back_populates='products', cascade="all, delete")

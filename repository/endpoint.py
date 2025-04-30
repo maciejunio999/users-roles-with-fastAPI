@@ -21,6 +21,12 @@ def get_one(db: Session, id: int):
 
 
 def create(request: schemas.CreateEndpoint, db: Session):
+    if len(db.query(models.Endpoint).filter(models.Endpoint.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
+    
+    if len(db.query(models.Endpoint).filter(models.Endpoint.url == request.url).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
+    
     new_endpoint = models.Endpoint(name=request.name, url=request.url, description=request.description)
     db.add(new_endpoint)
     db.commit()
@@ -45,6 +51,12 @@ def update(db: Session, id: int, request: schemas.CreateModule):
 
     if not endpoint:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Endpoint with id {id} not found")
+    
+    if len(db.query(models.Endpoint).filter(models.Endpoint.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
+    
+    if len(db.query(models.Endpoint).filter(models.Endpoint.url == request.url).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
     
     endpoint.name = request.name
     endpoint.description = request.description

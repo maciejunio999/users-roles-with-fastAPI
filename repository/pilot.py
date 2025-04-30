@@ -22,6 +22,11 @@ def get_one(db: Session, id: int):
 
 
 def create(request: schemas.CreatePilot, db: Session):
+    if len(db.query(models.Pilot).filter(models.Pilot.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
+    
+    if len(db.query(models.Pilot).filter(models.Pilot.code == request.code).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
     new_pilot = models.Pilot(name=request.name, code=request.code, description=request.description)
     db.add(new_pilot)
     db.commit()
@@ -46,6 +51,12 @@ def update_pilot(db: Session, id: int, request: schemas.CreatePilot):
 
     if not pilot:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Pilot with id {id} not found")
+    
+    if len(db.query(models.Pilot).filter(models.Pilot.name == request.name).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
+    
+    if len(db.query(models.Pilot).filter(models.Pilot.code == request.code).all()) >= 1:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
     
     pilot.name = request.name
     pilot.code = request.code
