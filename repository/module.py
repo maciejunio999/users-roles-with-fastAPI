@@ -24,9 +24,6 @@ def create(request: schemas.CreateModule, db: Session):
     if len(db.query(models.Module).filter(models.Module.name == request.name).all()) >= 1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
     
-    if len(db.query(models.Module).filter(models.Module.code == request.code).all()) >= 1:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
-    
     new_module = models.Module(name=request.name, description=request.description)
     db.add(new_module)
     db.commit()
@@ -54,9 +51,6 @@ def update(db: Session, id: int, request: schemas.CreateModule):
     
     if len(db.query(models.Module).filter(models.Module.name == request.name).all()) >= 1:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This name is already taken")
-    
-    if len(db.query(models.Module).filter(models.Module.code == request.code).all()) >= 1:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"This code is already taken")
     
     module.name = request.name
     module.description = request.description

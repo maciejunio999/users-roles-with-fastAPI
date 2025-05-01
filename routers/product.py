@@ -26,12 +26,12 @@ CONFIGURATION = {
 # BASIC
 
 @router.get('/', response_model=List[schemas.CreateProduct])
-def get_products(db: Session = Depends(database.get_db), require_roles: schemas.User = Depends(access.require_roles(CONFIGURATION['get_all']))):
+def get_products(db: Session = Depends(database.get_db), require_roles: schemas.User = Depends(access.require_any_role(CONFIGURATION['get_all'], CONFIGURATION['get_one']))):
     return product.get_all(db)
 
 
 @router.get('/{id}', response_model=schemas.ShowProduct)
-def get_product(id: int, db: Session = Depends(database.get_db), require_roles: schemas.User = Depends(access.require_roles(CONFIGURATION['get_one']))):
+def get_product(id: int, db: Session = Depends(database.get_db), require_roles: schemas.User = Depends(access.require_any_role(CONFIGURATION['get_all'], CONFIGURATION['get_one']))):
     return product.get_one(db, id)
 
 

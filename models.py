@@ -19,12 +19,10 @@ user_product_association = Table('user_product_association', Base.metadata,
     Column('product_id', Integer, ForeignKey('products.id'))
 )
 
-
 role_pilot_association = Table('role_pilot_association', Base.metadata,
     Column('pilot_id', Integer, ForeignKey('pilots.id')),
     Column('role_id', Integer, ForeignKey('roles.id'))
 )
-
 
 module_role_association = Table('module_role_association', Base.metadata,
     Column('module_id', Integer, ForeignKey('modules.id')),
@@ -65,6 +63,7 @@ class Role(Base):
     description = Column(String, unique=False, nullable=False)
     users = relationship('User', secondary=user_role_association, back_populates='roles', cascade="all, delete")
     pilots = relationship('Pilot', secondary=role_pilot_association, back_populates='roles', cascade="all, delete")
+    endpoints = relationship('Endpoint', secondary=role_endpoint_association, back_populates='roles', cascade="all, delete")
 
 class Pilot(Base):
     __tablename__ = 'pilots'
